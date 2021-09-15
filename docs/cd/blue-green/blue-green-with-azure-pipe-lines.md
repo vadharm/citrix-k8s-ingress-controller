@@ -67,8 +67,7 @@ Perform the following steps:
 1. Clone the GitHub repository and go to the directory `cd/blue-green`.
 1. Review and update the Citrix ADC configurations in the Terraform files under the `adc_configs` directory.
 1. Create two Azure pipelines using the existing YAML files, `deploy.yaml` and `teardown.yaml`, for deploying and tearing down the applications. See, [Azure pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/create-first-pipeline) for creating a pipeline.
-1. Update the subscription details and agent pool details in the pipeline YAML.
-1. Save the pipeline.
+1. Update the subscription details and agent pool details in the pipeline YAML.Save the pipeline.
 1. Create `v1.conf` under the `deployment_configs` directory as follows:
 
        backend_service_ip = "<IP of backend service with version v1>"
@@ -84,7 +83,7 @@ Perform the following steps:
         }
 1. Commit `setup_config.json` and `v1.conf` files using Git to trigger the pipeline to deploy the v1 version of the application.
 
-1. Access the application through Citrix ADC. 
+1. Verify that the backend application is now added as service in ADC and you can confirm by accessing the application. 
 1. Introduce the v2 version of the application by creating the `v2.conf` file.
 
         backend_service_ip = "<IP of backend service with version v2>"
@@ -119,6 +118,16 @@ Perform the following steps:
    Once the pipeline build is completed, version v1 of the deployment is torn down and only version v2 is running.
 
    **Note:** You can continue introducing newer versions by following the same steps as followed for version v2.
+   
+### Achieving Canary Deployment with the Solution
+   
+Above solution can be used to achieve canary deployment for your applications as well and the steps remains same as in Blue-Green Deployment. You need to set   the "TRAFFIC_WEIGHT" to the desired traffic percentage that you want to route user request to your latest app version -v2. For example, as per below configuration 20% traffic goes to v2 version of application and the rest i.e., 80% of traffic continues to get routed to older version-v1 of application without any manual changes.
+
+              {
+           "TRAFFIC_WEIGHT": "100",
+            "ADC_CONFIG": "cd/blue-green/deployment_config/v2.conf",
+            "DEPLOYMENT_VERSION": "v2"
+            }
 
 
 
